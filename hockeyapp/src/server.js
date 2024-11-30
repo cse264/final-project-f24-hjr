@@ -1,12 +1,12 @@
-require('dotenv').config();
-const express = require('express');
-const app = express();
+// require('dotenv').config();
+// const express = require('express');
+// const app = express();
 
 //insert axios here?? const axios = require("axios");
 
 // API info from env
-const api_url = process.env.API_BASE_URL;
-const api_key = process.env.SPORTRADAR_API_KEY;
+// const api_url = process.env.API_BASE_URL;
+// const api_key = process.env.SPORTRADAR_API_KEY;
 
 /**
  * GET - /players
@@ -17,10 +17,50 @@ const api_key = process.env.SPORTRADAR_API_KEY;
 
 // something like: `${SPORTRADAR_BASE_URL}/players/${teamId}/profile.json' for api call
 
-app.get('/api/players', async(req, res) => {
-    try{
+import { createClient } from '@supabase/supabase-js'
+const supabaseUrl = 'https://zvkfrsshquzrarleyako.supabase.co'
+const supabaseKey = process.env.SUPABASE_KEY
+const supabase = createClient(supabaseUrl, supabaseKey)
 
-    }catch(err){
+const myPlayersTable = 'skaters' 
 
+const fetchPlayers = async () => {
+    const { data, error } = await supabase
+      .from(`${myPlayersTable}`) // Table name
+      .select('* where situation = all');    // Columns to select (use '*' for all)
+  
+    if (error) {
+      console.error('Error fetching players:', error);
+      return;
     }
-})
+  
+    console.log('Players data:', data);
+  };
+  
+fetchPlayers();
+
+// const playerRoutes = (app) => {
+
+//     /**
+//      * GET - /players
+//      * Returns a JSON listing of all players in the database
+//      */
+//     app.get('/players', async (req, res, next) => {
+//         try{
+//             const qs = `SELECT * FROM ${myPlayersTable} where situation = all`
+//             query(qs).then(data => res.json(data.rows))
+//         }catch (err){
+//             next(err)
+//         }
+//     })
+
+// }
+
+
+// app.get('/api/players', async(req, res) => {
+//     try{
+
+//     }catch(err){
+
+//     }
+// })
