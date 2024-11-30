@@ -5,12 +5,15 @@ import DraftTeam from './pages/DraftTeam';
 import ViewTeam from './pages/ViewTeam';
 import PlayGame from './pages/PlayGame';
 import Home from './pages/Home';
+import logo from './NHL-Logo.png';
+import logo2 from './logo-alt.gif'
 
 function App() {
   return (
     <div className="App">
       <Router>
         <header className="App-header">
+        <img src={logo} alt="HockeyBuilder Logo" className="logo" />
           <nav>
             <ul className="nav-links">
               <li>
