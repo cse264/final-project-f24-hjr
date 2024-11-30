@@ -31,6 +31,13 @@
   justify-content: center;
 }
 
+.logo2 {
+  height: 300px; /* Adjust size */
+  width: auto; /* Keep aspect ratio */
+  align-items: center;
+  justify-content: center;
+}
+
 .App-link {
   color: #61dafb;
 }
