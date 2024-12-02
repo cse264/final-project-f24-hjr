@@ -1,4 +1,4 @@
-// require('dotenv').config();
+import 'dotenv/config'
 // const express = require('express');
 // const app = express();
 
@@ -16,6 +16,7 @@
  */
 
 // something like: `${SPORTRADAR_BASE_URL}/players/${teamId}/profile.json' for api call
+
 
 import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = 'https://zvkfrsshquzrarleyako.supabase.co'
