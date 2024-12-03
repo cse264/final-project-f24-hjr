@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { useState } from 'react'; 
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import './App.css';
-import DraftTeam from './pages/DraftTeam';
-import ViewTeam from './pages/ViewTeam';
-import PlayGame from './pages/PlayGame';
-import Home from './pages/Home';
+import DraftTeam from './pages/DraftTeam.js';
+import ViewTeam from './pages/ViewTeam.js';
+import PlayGame from './pages/PlayGame.js';
+import Home from './pages/Home.js';
 import logo from './NHL-Logo.png';
-import logo2 from './logo-alt.gif'
+//import logo2 from './logo-alt.gif'
 
 function App() {
+  const [role, setRole] = useState(null); 
+
   return (
     <div className="App">
       <Router>
@@ -18,6 +20,9 @@ function App() {
             <ul className="nav-links">
               <li>
                 <Link to="/">Home</Link>
+              </li>
+              <li>
+                <Link to="/login">Login</Link>
               </li>
               <li>
                 <Link to="/draft-team">Draft Team</Link>

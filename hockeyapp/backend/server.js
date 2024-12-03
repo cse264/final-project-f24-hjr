@@ -28,7 +28,7 @@ const myPlayersTable = 'skaters'
 const fetchPlayers = async () => {
     const { data, error } = await supabase
       .from(`${myPlayersTable}`) // Table name
-      .select('* where situation = all');    // Columns to select (use '*' for all)
+      .select(' * where situation = all');    // Columns to select (use '*' for all)
   
     if (error) {
       console.error('Error fetching players:', error);
