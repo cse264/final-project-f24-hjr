@@ -11,7 +11,7 @@
 
 // export default DraftTeam;
 import React, { useState, useEffect } from "react";
-import { fetchPlayers } from "../api";
+import { fetchPlayers } from "../api.js";
 
 const MAX_SALARY_CAP = 80000000; // Example salary cap in USD.
 

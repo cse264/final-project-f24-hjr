@@ -1,5 +1,5 @@
 import React from 'react';
-import logo2 from '/Users/hannahkaufman/Documents/CSE 264/Final Project/final-project-f24-hjr/hockeyapp/src/logo-alt.gif'
+import logo2 from './logo-alt.gif';
 
 function Home() {
   return (
