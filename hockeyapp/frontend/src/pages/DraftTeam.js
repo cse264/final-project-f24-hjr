@@ -5,11 +5,11 @@ function DraftTeam() {
   const [searchTerm, setSearchTerm] = useState("");
   const [position, setPosition] = useState("");
   const [team, setTeam] = useState({
-    leftWing: null,
-    center: null,
-    rightWing: null,
-    defense1: null,
-    defense2: null,
+    L: null,
+    C: null,
+    R: null,
+    D: null,
+    D2: null,
   });
   const [error, setError] = useState("");
   const [teamTitle, setTeamTitle] = useState("");
@@ -34,68 +34,103 @@ function DraftTeam() {
 
   const searchPlayers = async () => {
     try {
-      const endpoint = position ? `/players/${position}` : `/players`;
+      const endpoint = position ? `players/${position}` : `players`;
+      console.log("ONE")
       const response = await fetch(endpoint);
+      console.log("TWO")
+
       if (!response.ok) {
+        console.log("RESPONSE ERROR")
+
         throw new Error("Failed to fetch players");
       }
+      console.log("DATA")
+      console.log(await response.text());
+
       const data = await response.json();
+      console.log("THREE")
+
 
       const filteredPlayers = data.filter((player) =>
         player.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
+      console.log("FOUR")
+
       setPlayers(filteredPlayers);
+      console.log("FIVE")
+
     } catch (err) {
       console.error(err);
     }
   };
 
+
   const handleAddPlayer = (player) => {
+    // DEFENSEMEN
+    if (player.position === "D") {
+      if (team.D && team.D2) {
+        setError("Both defense positions are already filled.");
+        return;
+      }
+  
+      // D then D2
+      const updatedTeam = { ...team };
+      if (!team.D) {
+        updatedTeam.D = player;
+      } else {
+        updatedTeam.D2 = player;
+      }
+  
+      setTeam(updatedTeam);
+      setError(""); // Clear any previous error
+      return;
+    }
+  
+    // FORWARDS
     if (team[player.position]) {
       setError(`The ${player.position} position is already filled.`);
       return;
     }
-
-    if (player.position === "defense" && team.defense1 && team.defense2) {
-      setError("Both defense positions are already filled.");
-      return;
-    }
-
+  
+    // Add FORWARDS
     const updatedTeam = { ...team };
-    if (player.position === "defense") {
-      if (!team.defense1) {
-        updatedTeam.defense1 = player;
-      } else {
-        updatedTeam.defense2 = player;
-      }
-    } else {
-      updatedTeam[player.position] = player;
-    }
-
+    updatedTeam[player.position] = player;
     setTeam(updatedTeam);
     setError(""); // Clear any previous error
   };
 
   const saveTeam = async () => {
     if (
-      !team.leftWing ||
-      !team.center ||
-      !team.rightWing ||
-      !team.defense1 ||
-      !team.defense2
+      !team.L ||
+      !team.C ||
+      !team.R ||
+      !team.D ||
+      !team.D2
     ) {
       setError("The team must have all positions filled before saving.");
       return;
     }
 
     try {
+      const payload = {
+        title: teamTitle, 
+        L: team.L.name,  
+        C: team.C.name,
+        R: team.R.name,
+        D: team.D.name,
+        D2: team.D2.name
+      }
+      console.log(payload)
+
       const response = await fetch("/teams", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: teamTitle }),
+        body: JSON.stringify({ payload })
       });
-
+      
       if (!response.ok) {
+        const errorText = await response.text(); // Await response text
+        console.error('Backend error message:', errorText); // Log backend error
         throw new Error("Failed to save the team");
       }
 
@@ -112,14 +147,14 @@ function DraftTeam() {
       await Promise.all(playerPromises);
 
       alert("Team saved successfully!");
-      setTeam({
-        leftWing: null,
-        center: null,
-        rightWing: null,
-        defense1: null,
-        defense2: null,
-      });
-      setTeamTitle("");
+      // setTeam({
+      //   L: null,
+      //   C: null,
+      //   R: null,
+      //   D: null,
+      //   D2: null,
+      // });
+      // setTeamTitle("");
     } catch (err) {
       console.error(err);
       setError("Failed to save the team. Please try again.");

@@ -35,7 +35,12 @@ app.get('/players/:position', async (req, res, next) => {
       .from(myPlayersTable)
       .select('*')
       .eq('position', position);
-    if (error) throw error;
+    // if (error) throw error;
+    if (error) {
+      console.error('Supabase error:', error);
+      throw error;
+    }
+
 
     res.json(data);
   } catch (err) {
@@ -47,22 +52,30 @@ app.get('/players/:position', async (req, res, next) => {
 // POST - /teams
 app.post('/teams', async (req, res, next) => {
   try {
-    const { title, body } = req.body;
+    console.log(req.body)
 
-    if (!title || !body) {
-      return res.status(400).send('Missing required fields: title, body');
-    }
+    const teamName = req.body.title
+    const left = req.body.L 
+    const center = req.body.C 
+    const right = req.body.R  
+    const defense1 = req.body.D 
+    const defense2 = req.body.D2
 
-    if (title.length > 255) {
-      return res.status(400).send('Title length is above 255 characters.');
+    console.log(`${teamName} + ${left} + ${center} + ${right} + ${defense1} + ${defense2}`)
+
+    if (!teamName || !left || !center || !right || !defense1 || !defense2) {
+      return res.status(400).send('Missing required fields: teamName, left, center, right, defense1, defense2');
     }
 
     const { data, error } = await supabase
       .from(myTeamsTable)
-      .insert({ title, body, date: new Date() })
-      .select();
+      .insert([{ teamName: teamName, left: left, center: center, right: right, defense1: defense1, defense2: defense2 }]);
 
-    if (error) throw error;
+    // if (error) throw error;
+    if (error) {
+      console.error('Supabase error:', error);
+      return res.status(500).json({ error: error.message });
+    }
 
     res.json(data[0]); // Returning the newly created team
   } catch (err) {
