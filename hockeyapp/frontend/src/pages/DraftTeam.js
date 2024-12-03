@@ -34,36 +34,30 @@ function DraftTeam() {
 
   const searchPlayers = async () => {
     try {
-      const endpoint = position ? `players/${position}` : `players`;
-      console.log("ONE")
+      let endpoint = "/players";
+
+      // Filter players by position if a position is selected
+      if (position) {
+        endpoint += `/${position}`;
+      }
+
       const response = await fetch(endpoint);
-      console.log("TWO")
-
       if (!response.ok) {
-        console.log("RESPONSE ERROR")
-
         throw new Error("Failed to fetch players");
       }
-      console.log("DATA")
-      console.log(await response.text());
 
       const data = await response.json();
-      console.log("THREE")
 
-
+      // Apply search term filtering (if any)
       const filteredPlayers = data.filter((player) =>
         player.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
-      console.log("FOUR")
 
       setPlayers(filteredPlayers);
-      console.log("FIVE")
-
     } catch (err) {
       console.error(err);
     }
   };
-
 
   const handleAddPlayer = (player) => {
     // DEFENSEMEN
@@ -72,26 +66,25 @@ function DraftTeam() {
         setError("Both defense positions are already filled.");
         return;
       }
-  
-      // D then D2
+
       const updatedTeam = { ...team };
       if (!team.D) {
         updatedTeam.D = player;
       } else {
         updatedTeam.D2 = player;
       }
-  
+
       setTeam(updatedTeam);
       setError(""); // Clear any previous error
       return;
     }
-  
+
     // FORWARDS
     if (team[player.position]) {
       setError(`The ${player.position} position is already filled.`);
       return;
     }
-  
+
     // Add FORWARDS
     const updatedTeam = { ...team };
     updatedTeam[player.position] = player;
@@ -100,51 +93,32 @@ function DraftTeam() {
   };
 
   const saveTeam = async () => {
-    if (
-      !team.L ||
-      !team.C ||
-      !team.R ||
-      !team.D ||
-      !team.D2
-    ) {
+    if (!team.L || !team.C || !team.R || !team.D || !team.D2) {
       setError("The team must have all positions filled before saving.");
       return;
     }
 
     try {
       const payload = {
-        title: teamTitle, 
-        L: team.L.name,  
+        title: teamTitle,
+        L: team.L.name,
         C: team.C.name,
         R: team.R.name,
         D: team.D.name,
-        D2: team.D2.name
-      }
-      console.log(payload)
+        D2: team.D2.name,
+      };
 
       const response = await fetch("/teams", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
+        body: JSON.stringify(payload),
       });
-      
+
       if (!response.ok) {
-        const errorText = await response.text(); // Await response text
-        console.error('Backend error message:', errorText); // Log backend error
+        const errorText = await response.text();
+        console.error("Backend error message:", errorText);
         throw new Error("Failed to save the team");
       }
-
-      const { id: teamId } = await response.json();
-
-      // const playerPromises = Object.values(team).map((player) =>
-      //   fetch(`/teams/${teamId}/players`, {
-      //     method: "POST",
-      //     headers: { "Content-Type": "application/json" },
-      //     body: JSON.stringify({ playerId: player.id }),
-      //   })
-      // );
-
-      // await Promise.all(playerPromises);
 
       alert("Team saved successfully!");
       setTeam({
@@ -188,10 +162,10 @@ function DraftTeam() {
             style={{ marginRight: "1rem", padding: "0.5rem" }}
           >
             <option value="">All Positions</option>
-            <option value="leftWing">Left Wing</option>
-            <option value="center">Center</option>
-            <option value="rightWing">Right Wing</option>
-            <option value="defense">Defense</option>
+            <option value="L">Left Wing</option>
+            <option value="C">Center</option>
+            <option value="R">Right Wing</option>
+            <option value="D">Defense</option>
           </select>
           <button onClick={searchPlayers} style={{ padding: "0.5rem 1rem" }}>
             Search
@@ -199,21 +173,25 @@ function DraftTeam() {
         </div>
 
         <ul>
-          {players.map((player) => (
-            <li key={player.id} style={{ marginBottom: "1rem" }}>
-              <div style={{ display: "flex", justifyContent: "space-between" }}>
-                <span>
-                  {player.name} ({player.position})
-                </span>
-                <button
-                  onClick={() => handleAddPlayer(player)}
-                  style={{ padding: "0.5rem" }}
-                >
-                  Add to Team
-                </button>
-              </div>
-            </li>
-          ))}
+          {players.length > 0 ? (
+            players.map((player) => (
+              <li key={player.id} style={{ marginBottom: "1rem" }}>
+                <div style={{ display: "flex", justifyContent: "space-between" }}>
+                  <span>
+                    {player.name} ({player.position})
+                  </span>
+                  <button
+                    onClick={() => handleAddPlayer(player)}
+                    style={{ padding: "0.5rem" }}
+                  >
+                    Add to Team
+                  </button>
+                </div>
+              </li>
+            ))
+          ) : (
+            <li>No players found</li>
+          )}
         </ul>
         {error && <p style={{ color: "red" }}>{error}</p>}
       </div>
