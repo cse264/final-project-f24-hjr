@@ -72,10 +72,26 @@ app.post('/teams', async (req, res, next) => {
       .insert([{ teamName: teamName, left: left, center: center, right: right, defense1: defense1, defense2: defense2 }]);
 
     // if (error) throw error;
+    // if (error) {
+    //   console.error('Supabase error:', error);
+    //   return res.status(500).json({ error: error.message });
+    // }
+    console.log('Supabase data:', data);
+    console.log('Supabase error:', error);
+
     if (error) {
       console.error('Supabase error:', error);
       return res.status(500).json({ error: error.message });
     }
+
+    // If data is null or empty, log and handle it
+    if (!data || data.length === 0) {
+      return res.status(400).json({ error: 'Failed to insert the team' });
+    }
+    // if (!data || data.length === 0) { 
+    //   return res.json({ success: true, message: "Team inserted successfully, but no data returned from Supabase" }); 
+    // }
+
 
     res.json(data[0]); // Returning the newly created team
   } catch (err) {

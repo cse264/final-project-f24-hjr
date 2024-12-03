@@ -125,7 +125,7 @@ function DraftTeam() {
       const response = await fetch("/teams", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ payload })
+        body: JSON.stringify(payload)
       });
       
       if (!response.ok) {
@@ -136,25 +136,25 @@ function DraftTeam() {
 
       const { id: teamId } = await response.json();
 
-      const playerPromises = Object.values(team).map((player) =>
-        fetch(`/teams/${teamId}/players`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ playerId: player.id }),
-        })
-      );
+      // const playerPromises = Object.values(team).map((player) =>
+      //   fetch(`/teams/${teamId}/players`, {
+      //     method: "POST",
+      //     headers: { "Content-Type": "application/json" },
+      //     body: JSON.stringify({ playerId: player.id }),
+      //   })
+      // );
 
-      await Promise.all(playerPromises);
+      // await Promise.all(playerPromises);
 
       alert("Team saved successfully!");
-      // setTeam({
-      //   L: null,
-      //   C: null,
-      //   R: null,
-      //   D: null,
-      //   D2: null,
-      // });
-      // setTeamTitle("");
+      setTeam({
+        L: null,
+        C: null,
+        R: null,
+        D: null,
+        D2: null,
+      });
+      setTeamTitle("");
     } catch (err) {
       console.error(err);
       setError("Failed to save the team. Please try again.");
