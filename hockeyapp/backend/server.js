@@ -1,130 +1,93 @@
-import 'dotenv/config'
+import 'dotenv/config';
+import express from 'express';
+import { createClient } from '@supabase/supabase-js';
 
-import { createClient } from '@supabase/supabase-js'
-const supabaseUrl = 'https://zvkfrsshquzrarleyako.supabase.co'
-const supabaseKey = process.env.SUPABASE_KEY
-const supabase = createClient(supabaseUrl, supabaseKey)
+const supabaseUrl = 'https://zvkfrsshquzrarleyako.supabase.co';
+const supabaseKey = process.env.SUPABASE_KEY;
+const supabase = createClient(supabaseUrl, supabaseKey);
 
-const myPlayersTable = 'skaters' 
-const myTeamsTable = 'teams'
+const myPlayersTable = 'skaters';
+const myTeamsTable = 'teams';
 
-const playerRoutes = (app) => {
+const app = express();
+app.use(express.json()); // To parse JSON request bodies
 
-    /**
-     * GET - /players
-     * Returns a JSON listing of all players in the database
-     */
-    app.get('/players', async (req, res, next) => {
-        try{
-            const qs = `SELECT * FROM ${myPlayersTable}`
-            query(qs).then(data => res.json(data.rows))
-        }catch (err){
-            next(err)
-        }
-    })
+// GET - /players
+app.get('/players', async (req, res, next) => {
+  try {
+    const { data, error } = await supabase
+      .from(myPlayersTable)
+      .select('*');
+    if (error) throw error;
 
-    /**
-     * GET - /players/:position
-     * Returns a JSON listing of all players of a selected position
-     */
-    app.get('/players/:position', async (req, res, next) => {
-        try{
-            // info we need from body
-            const position = req.params.position
+    res.json(data);
+  } catch (err) {
+    console.error('Error fetching players:', err);
+    next(err);
+  }
+});
 
-            const qs = `SELECT * FROM ${myPlayersTable} where position = ${position}`
-            query(qs).then(data => res.json(data.rows))
-        }catch (err){
-            next(err)
-        }
-    })
+// GET - /players/:position
+app.get('/players/:position', async (req, res, next) => {
+  try {
+    const position = req.params.position;
+    const { data, error } = await supabase
+      .from(myPlayersTable)
+      .select('*')
+      .eq('position', position);
+    if (error) throw error;
 
+    res.json(data);
+  } catch (err) {
+    console.error('Error fetching players by position:', err);
+    next(err);
+  }
+});
 
-    /**
-     * POST - /teams
-     */
-    app.post('/teams', async (req, res, next) => {
-      try{
-        // what columns do we need for teams???
-        const title = req.body.title
-        const body = req.body.body
+// POST - /teams
+app.post('/teams', async (req, res, next) => {
+  try {
+    const { title, body } = req.body;
 
-        if(!title || !body){
-          return res.status(404).send("Missing required fields: title, body")
-        }
-        if(title && title.length > 255){
-          return res.status(400).send("Title length is above 255 characters.")
-        }
+    if (!title || !body) {
+      return res.status(400).send('Missing required fields: title, body');
+    }
 
-        const qs = `INSERT into ${myTeamsTable} (film_id, title, body, date) VALUES(${film_id}, '${title}', '${body}', '${date}')`
-        query(qs).then(data => {res.json(data.rows)})
-      }catch(err){
-        next(err)
-      }
-    })
+    if (title.length > 255) {
+      return res.status(400).send('Title length is above 255 characters.');
+    }
 
-    /**
-     * GET - /teams
-     * Returns a JSON listing of all players in the database
-     */
-    app.get('/teams', async (req, res, next) => {
-        try{
-            const qs = `SELECT * FROM ${myTeamsTable}`
-            query(qs).then(data => res.json(data.rows))
-        }catch (err){
-            next(err)
-        }
-    })
+    const { data, error } = await supabase
+      .from(myTeamsTable)
+      .insert({ title, body, date: new Date() })
+      .select();
 
-}
+    if (error) throw error;
 
+    res.json(data[0]); // Returning the newly created team
+  } catch (err) {
+    console.error('Error creating team:', err);
+    next(err);
+  }
+});
 
+// GET - /teams
+app.get('/teams', async (req, res, next) => {
+  try {
+    const { data, error } = await supabase
+      .from(myTeamsTable)
+      .select('*');
+    if (error) throw error;
 
-// const fetchPlayers = async () => {
-//   const { data, error } = await supabase
-//     .from(`${myPlayersTable}`) // Table name
-//     .select('* where situation = all');    // Columns to select (use '*' for all)
+    res.json(data);
+  } catch (err) {
+    console.error('Error fetching teams:', err);
+    next(err);
+  }
+});
 
-//   if (error) {
-//     console.error('Error fetching players:', error);
-//     return;
-//   }
-
-//   console.log('Players data:', data);
-// };
-
-// fetchPlayers();
-
-
-
-
-// const express = require('express');
-// const app = express();
-
-//insert axios here?? const axios = require("axios");
-
-// API info from env
-// const api_url = process.env.API_BASE_URL;
-// const api_key = process.env.SPORTRADAR_API_KEY;
-
-/**
- * GET - /players
- * returns all players from api ??
- * Param: api_key
- * Return 500 if there is an error fetching
- */
-
-// something like: `${SPORTRADAR_BASE_URL}/players/${teamId}/profile.json' for api call
-
-
-
-
-
-
-// app.get('/api/players', async(req, res) => {
-//     try{
-
-//     }catch(err){
-
-//     }
-// })
+// Start server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});

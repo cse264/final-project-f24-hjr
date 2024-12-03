@@ -1,89 +1,204 @@
-// import React from 'react';
-
-// function DraftTeam() {
-//   return (
-//     <div>
-//       <h1>Draft Team</h1>
-//       <p>Select players within the salary cap to build your team.</p>
-//     </div>
-//   );
-// }
-
-// export default DraftTeam;
 import React, { useState, useEffect } from "react";
-import { fetchPlayers } from "../api.js";
-
-const MAX_SALARY_CAP = 80000000; // Example salary cap in USD.
 
 function DraftTeam() {
   const [players, setPlayers] = useState([]);
-  const [draftedPlayers, setDraftedPlayers] = useState([]);
-  const [salaryUsed, setSalaryUsed] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
+  const [position, setPosition] = useState("");
+  const [team, setTeam] = useState({
+    leftWing: null,
+    center: null,
+    rightWing: null,
+    defense1: null,
+    defense2: null,
+  });
+  const [error, setError] = useState("");
+  const [teamTitle, setTeamTitle] = useState("");
 
-  // Fetch players when the component mounts
+  // Fetch all players when the component mounts
   useEffect(() => {
-    fetchPlayers().then((data) => setPlayers(data));
+    fetchPlayers();
   }, []);
 
-  // Handle adding a player to the team
-  const handleDraftPlayer = (player) => {
-    if (salaryUsed + player.salary > MAX_SALARY_CAP) {
-      alert("You cannot exceed the salary cap!");
-      return;
+  const fetchPlayers = async () => {
+    try {
+      const response = await fetch("/players");
+      if (!response.ok) {
+        throw new Error("Failed to fetch players");
+      }
+      const data = await response.json();
+      setPlayers(data);
+    } catch (err) {
+      console.error(err);
     }
-    setDraftedPlayers((prev) => [...prev, player]);
-    setSalaryUsed((prev) => prev + player.salary);
   };
 
-  // Filter players by search term
-  const filteredPlayers = players.filter((player) =>
-    player.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const searchPlayers = async () => {
+    try {
+      const endpoint = position ? `/players/${position}` : `/players`;
+      const response = await fetch(endpoint);
+      if (!response.ok) {
+        throw new Error("Failed to fetch players");
+      }
+      const data = await response.json();
+
+      const filteredPlayers = data.filter((player) =>
+        player.name.toLowerCase().includes(searchTerm.toLowerCase())
+      );
+      setPlayers(filteredPlayers);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleAddPlayer = (player) => {
+    if (team[player.position]) {
+      setError(`The ${player.position} position is already filled.`);
+      return;
+    }
+
+    if (player.position === "defense" && team.defense1 && team.defense2) {
+      setError("Both defense positions are already filled.");
+      return;
+    }
+
+    const updatedTeam = { ...team };
+    if (player.position === "defense") {
+      if (!team.defense1) {
+        updatedTeam.defense1 = player;
+      } else {
+        updatedTeam.defense2 = player;
+      }
+    } else {
+      updatedTeam[player.position] = player;
+    }
+
+    setTeam(updatedTeam);
+    setError(""); // Clear any previous error
+  };
+
+  const saveTeam = async () => {
+    if (
+      !team.leftWing ||
+      !team.center ||
+      !team.rightWing ||
+      !team.defense1 ||
+      !team.defense2
+    ) {
+      setError("The team must have all positions filled before saving.");
+      return;
+    }
+
+    try {
+      const response = await fetch("/teams", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: teamTitle }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to save the team");
+      }
+
+      const { id: teamId } = await response.json();
+
+      const playerPromises = Object.values(team).map((player) =>
+        fetch(`/teams/${teamId}/players`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ playerId: player.id }),
+        })
+      );
+
+      await Promise.all(playerPromises);
+
+      alert("Team saved successfully!");
+      setTeam({
+        leftWing: null,
+        center: null,
+        rightWing: null,
+        defense1: null,
+        defense2: null,
+      });
+      setTeamTitle("");
+    } catch (err) {
+      console.error(err);
+      setError("Failed to save the team. Please try again.");
+    }
+  };
+
+  const renderTeam = () => {
+    return Object.entries(team).map(([position, player]) => (
+      <div key={position} className="team-position">
+        <strong>{position}:</strong> {player ? player.name : "Empty"}
+      </div>
+    ));
+  };
 
   return (
-    <div className="p-6 bg-background text-white min-h-screen">
-  <h1 className="text-4xl font-extrabold text-primary mb-6">Draft Your Team</h1>
-
-  <div className="mb-6">
-    <input
-      type="text"
-      placeholder="Search players..."
-      value={searchTerm}
-      onChange={(e) => setSearchTerm(e.target.value)}
-      className="p-3 w-full border-2 border-secondary rounded-md focus:border-primary outline-none"
-    />
-  </div>
-
-  <h2 className="text-2xl font-bold mb-4">Available Players</h2>
-  <ul className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-    {filteredPlayers.map((player) => (
-      <li
-        key={player.id}
-        className="bg-secondary p-4 rounded-lg shadow-lg hover:bg-primary hover:shadow-xl transition transform hover:-translate-y-1"
-      >
-        <div className="flex justify-between items-center mb-2">
-          <span className="font-bold">{player.name}</span>
-          <span>${player.salary.toLocaleString()}</span>
+    <div className="draft-team-container" style={{ display: "flex", gap: "2rem" }}>
+      {/* Search Section */}
+      <div className="search-section" style={{ flex: 1 }}>
+        <h2>Search Players</h2>
+        <div style={{ marginBottom: "1rem" }}>
+          <input
+            type="text"
+            placeholder="Search by name"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            style={{ marginRight: "1rem", padding: "0.5rem" }}
+          />
+          <select
+            value={position}
+            onChange={(e) => setPosition(e.target.value)}
+            style={{ marginRight: "1rem", padding: "0.5rem" }}
+          >
+            <option value="">All Positions</option>
+            <option value="leftWing">Left Wing</option>
+            <option value="center">Center</option>
+            <option value="rightWing">Right Wing</option>
+            <option value="defense">Defense</option>
+          </select>
+          <button onClick={searchPlayers} style={{ padding: "0.5rem 1rem" }}>
+            Search
+          </button>
         </div>
-        <button
-          onClick={() => handleDraftPlayer(player)}
-          className="w-full px-4 py-2 bg-accent text-white font-bold rounded-md hover:bg-primary transition"
-        >
-          Draft Player
-        </button>
-      </li>
-    ))}
-  </ul>
 
-  <h2 className="text-2xl font-bold mt-8">Drafted Players</h2>
-  <p className="mb-4">Salary Used: ${salaryUsed.toLocaleString()} / ${MAX_SALARY_CAP.toLocaleString()}</p>
-  <ul className="space-y-2">
-    {draftedPlayers.map((player, index) => (
-      <li key={index} className="text-lg font-semibold">{player.name}</li>
-    ))}
-  </ul>
-</div>
+        <ul>
+          {players.map((player) => (
+            <li key={player.id} style={{ marginBottom: "1rem" }}>
+              <div style={{ display: "flex", justifyContent: "space-between" }}>
+                <span>
+                  {player.name} ({player.position})
+                </span>
+                <button
+                  onClick={() => handleAddPlayer(player)}
+                  style={{ padding: "0.5rem" }}
+                >
+                  Add to Team
+                </button>
+              </div>
+            </li>
+          ))}
+        </ul>
+        {error && <p style={{ color: "red" }}>{error}</p>}
+      </div>
+
+      {/* Team Section */}
+      <div className="team-section" style={{ flex: 1 }}>
+        <h2>Your Team</h2>
+        <input
+          type="text"
+          placeholder="Team Name"
+          value={teamTitle}
+          onChange={(e) => setTeamTitle(e.target.value)}
+          style={{ marginBottom: "1rem", padding: "0.5rem", display: "block" }}
+        />
+        {renderTeam()}
+        <button onClick={saveTeam} style={{ padding: "0.5rem 1rem", marginTop: "1rem" }}>
+          Save Team
+        </button>
+      </div>
+    </div>
   );
 }
 
