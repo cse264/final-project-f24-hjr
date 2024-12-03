@@ -16,12 +16,29 @@ const playerRoutes = (app) => {
      */
     app.get('/players', async (req, res, next) => {
         try{
-            const qs = `SELECT * FROM ${myPlayersTable} where situation = all`
+            const qs = `SELECT * FROM ${myPlayersTable}`
             query(qs).then(data => res.json(data.rows))
         }catch (err){
             next(err)
         }
     })
+
+    /**
+     * GET - /players/:position
+     * Returns a JSON listing of all players of a selected position
+     */
+    app.get('/players/:position', async (req, res, next) => {
+        try{
+            // info we need from body
+            const position = req.params.position
+
+            const qs = `SELECT * FROM ${myPlayersTable} where position = ${position}`
+            query(qs).then(data => res.json(data.rows))
+        }catch (err){
+            next(err)
+        }
+    })
+
 
     /**
      * POST - /teams
@@ -44,6 +61,19 @@ const playerRoutes = (app) => {
       }catch(err){
         next(err)
       }
+    })
+
+    /**
+     * GET - /teams
+     * Returns a JSON listing of all players in the database
+     */
+    app.get('/teams', async (req, res, next) => {
+        try{
+            const qs = `SELECT * FROM ${myTeamsTable}`
+            query(qs).then(data => res.json(data.rows))
+        }catch (err){
+            next(err)
+        }
     })
 
 }
