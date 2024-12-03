@@ -105,15 +105,45 @@ app.get('/teams', async (req, res, next) => {
   try {
     const { data, error } = await supabase
       .from(myTeamsTable)
-      .select('*');
+      .select('*');  
+
     if (error) throw error;
 
-    res.json(data);
+    res.json(data);  
   } catch (err) {
     console.error('Error fetching teams:', err);
     next(err);
   }
 });
+
+
+app.delete('/teams/:id', async (req, res, next) => {
+  const { id } = req.params;
+  console.log('Attempting to delete team with ID:', id);
+
+  try {
+    const { data, error } = await supabase
+      .from(myTeamsTable) 
+      .delete()
+      .eq('teamId', id);  
+
+    if (error) {
+      console.error('Error deleting team:', error);
+      return res.status(500).json({ message: 'Internal server error' });
+    }
+
+    if (data.length === 0) {
+      return res.status(404).json({ message: 'Team not found' });
+    }
+
+    return res.status(200).json({ message: 'Team deleted successfully' });
+  } catch (err) {
+    console.error('Error deleting team:', err);
+    next(err);
+  }
+});
+
+
 
 // Start server
 const PORT = process.env.PORT || 3000;

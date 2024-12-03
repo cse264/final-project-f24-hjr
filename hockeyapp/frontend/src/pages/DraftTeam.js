@@ -210,6 +210,8 @@ function DraftTeam() {
         <button onClick={saveTeam} style={{ padding: "0.5rem 1rem", marginTop: "1rem" }}>
           Save Team
         </button>
+        {/* Error Section */}
+        {error && <p style={{ color: "red", marginTop: "1rem" }}>{error}</p>}
       </div>
     </div>
   );
