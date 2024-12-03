@@ -87,10 +87,6 @@ const playerRoutes = (app) => {
 // something like: `${SPORTRADAR_BASE_URL}/players/${teamId}/profile.json' for api call
 
 
-
-
-
-
 // app.get('/api/players', async(req, res) => {
 //     try{
 
