@@ -42,6 +42,10 @@
 	* API Integration - Moneypuck
 	* Database - PostgreSQL, Supabase
 
+### How to Run the code:
+* First open a terminal and cd into the backend. once in the backend, run 'node server.js' to run it on port 3000.
+* Next, open a seperate terminal and cd into the frontend. once in the frontend, run 'npm run start' to start the react app on port 3001. Then, you can interact with the app in the localhost. 
+* For loggin in, one admin login is 'jack' and '123'. a user login is 'ryan' and '456'. each are the username and password respectively. 
 
 ### Requirements:
 * Must have user accounts and different user roles (like user/Admin, free/paid, etc)
@@ -67,7 +71,3 @@ Build your team and write a document describing your application to me by Monday
 * Final Presentation and Demo
   * You will prepare a 5 minute presentation and demo of your application in class during the last week of classes
 
-### How to Run the code:
-* First open a terminal and cd into the backend. once in the backend, run 'node server.js' to run it on port 3000.
-* Next, open a seperate terminal and cd into the frontend. once in the frontend, run 'npm run start' to start the react app on port 3001. Then, you can interact with the app in the localhost. 
-* For loggin in, one admin login is 'jack' and '123'. a user login is 'ryan' and '456'. each are the username and password respectively. 
