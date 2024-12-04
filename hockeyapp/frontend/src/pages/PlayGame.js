@@ -1,3 +1,8 @@
+/**
+ * PlayGame page
+ * This file contains the functionality and the look of the playgame UI
+ */
+
 import React, { useState, useEffect } from "react";
 
 function PlayGame() {

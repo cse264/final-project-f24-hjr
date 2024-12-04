@@ -1,3 +1,8 @@
+/**
+ * DraftTeams page
+ * This file contains the functionality and look of the draftteams UI
+ */
+
 import React, { useState, useEffect } from "react";
 
 function DraftTeam() {
@@ -14,11 +19,15 @@ function DraftTeam() {
   const [error, setError] = useState("");
   const [teamTitle, setTeamTitle] = useState("");
 
-  // Fetch all players when the component mounts
+  // Fetches all players as soon as the file mounts, list form
   useEffect(() => {
     fetchPlayers();
   }, []);
 
+  /**
+   * Used to fetch a list of all players (position non-specific)
+   * Calls the basic GET route
+   */
   const fetchPlayers = async () => {
     try {
       const response = await fetch("/players");
@@ -32,11 +41,15 @@ function DraftTeam() {
     }
   };
 
+  /**
+   * Used to fetch a list of all players of a certain position
+   * Calls the GET route that includes a position parameter
+   */
   const searchPlayers = async () => {
     try {
       let endpoint = "/players";
 
-      // Filter players by position if a position is selected
+      // if there is a position specified, add the position to the endpoint
       if (position) {
         endpoint += `/${position}`;
       }
@@ -48,7 +61,7 @@ function DraftTeam() {
 
       const data = await response.json();
 
-      // Apply search term filtering (if any)
+      // Filter the player list to only include players that include the search term
       const filteredPlayers = data.filter((player) =>
         player.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
@@ -59,19 +72,26 @@ function DraftTeam() {
     }
   };
 
+  /**
+   * Used to handle adding a player
+   * Guarantees that the team is filled properly
+   */
   const handleAddPlayer = (player) => {
     // DEFENSEMEN
     if (player.position === "D") {
+      // throw error if user tries to use the same defensemen twice
       if(team.D && team.D.name === player.name){
         setError('Cannot choose the same defensemen twice.')
         return;
       }
-
+      
+      // throw error if user tries to choose another defensemen
       if (team.D && team.D2) {
         setError("Both defense positions are already filled.");
         return;
       }
-
+      
+      // updates team to add the selected player
       const updatedTeam = { ...team };
       if (!team.D) {
         updatedTeam.D = player;
@@ -80,24 +100,29 @@ function DraftTeam() {
       }
 
       setTeam(updatedTeam);
-      setError(""); // Clear any previous error
+      setError(""); 
       return;
     }
 
     // FORWARDS
+    // throw error if the user selects a player for a position that is already filled
     if (team[player.position]) {
       setError(`The ${player.position} position is already filled.`);
       return;
     }
 
-    // Add FORWARDS
+    // updates team to add the selected forward
     const updatedTeam = { ...team };
     updatedTeam[player.position] = player;
     setTeam(updatedTeam);
-    setError(""); // Clear any previous error
+    setError(""); 
   };
 
+  /**
+   * Used to handle saving the selected team
+   */
   const saveTeam = async () => {
+    // throws an error if there is an empty position
     if (!team.L || !team.C || !team.R || !team.D || !team.D2) {
       setError("The team must have all positions filled before saving.");
       return;
@@ -140,6 +165,7 @@ function DraftTeam() {
     }
   };
 
+  
   const renderTeam = () => {
     return Object.entries(team).map(([position, player]) => (
       <div key={position} className="team-position">

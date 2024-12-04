@@ -1,3 +1,8 @@
+/**
+ * Server backend file
+ * This file contains our routes 
+ */
+
 import 'dotenv/config';
 import express from 'express';
 import { createClient } from '@supabase/supabase-js';
@@ -12,12 +17,17 @@ const myTeamsTable = 'teams';
 const app = express();
 app.use(express.json()); // To parse JSON request bodies
 
-// GET - /players
+/**
+ * GET - /players
+ * Returns a list of all players in the database
+ * Returns an error upon failure
+ */
 app.get('/players', async (req, res, next) => {
   try {
     const { data, error } = await supabase
       .from(myPlayersTable)
       .select('*');
+    
     if (error) throw error;
 
     res.json(data);
@@ -27,7 +37,11 @@ app.get('/players', async (req, res, next) => {
   }
 });
 
-// GET - /players/:position
+/**
+ * GET - /players/:position
+ * Returns a list of all players of the specified position
+ * Returns an error upon failure
+ */
 app.get('/players/:position', async (req, res, next) => {
   try {
     const position = req.params.position;
@@ -35,7 +49,7 @@ app.get('/players/:position', async (req, res, next) => {
       .from(myPlayersTable)
       .select('*')
       .eq('position', position);
-    // if (error) throw error;
+  
     if (error) {
       console.error('Supabase error:', error);
       throw error;
@@ -48,7 +62,11 @@ app.get('/players/:position', async (req, res, next) => {
   }
 });
 
-// POST - /teams
+/**
+ * POST - /teams
+ * Posts a new team to the database
+ * Returns an error upon failure
+ */
 app.post('/teams', async (req, res, next) => {
   try {
     console.log(req.body)
@@ -70,13 +88,11 @@ app.post('/teams', async (req, res, next) => {
       .from(myTeamsTable)
       .insert([{ teamName: teamName, left: left, center: center, right: right, defense1: defense1, defense2: defense2 }]);
 
-    // Check for errors
     if (error) {
       console.error('Supabase insert error:', error);
       return res.status(500).json({ error: error.message });
     }
 
-    // Return a success response
     res.status(200).json({
       success: true,
       message: 'Team created successfully',
@@ -88,7 +104,11 @@ app.post('/teams', async (req, res, next) => {
   }
 });
 
-// GET - /teams
+/**
+ * GET - /teams
+ * Returns a list of all teams in the database
+ * Returns an error upon failure
+ */
 app.get('/teams', async (req, res, next) => {
   try {
     const { data, error } = await supabase
@@ -104,7 +124,12 @@ app.get('/teams', async (req, res, next) => {
   }
 });
 
-// DELETE - /teams/:id
+/**
+ * DELETE - /teams/:id
+ * Deletes a desired team in the database based on id
+ * Returns a success response if it worked
+ * Returns an error upon failure
+ */
 app.delete('/teams/:id', async (req, res, next) => {
   const { id } = req.params;
   console.log('Attempting to delete team with ID:', id);
