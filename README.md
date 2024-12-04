@@ -6,43 +6,41 @@
 ### Build a web app in a team of 4-5
 
 ### Description of the Project
-Name of Application
-HockeyBuilder 
-Roles of Team Members
-Hannah - API Integration
-Jack - Backend/Database functionality
-Ryan - Frontend/UI
-Functionality
-User Accounts - 
-Admin will be able to create teams.
-Users can adjust their teams.
-Database - 
-	Our database will hold the teams that users create. 
-	It will also hold a table full of all existing players
-Interactive UI - 
-	Users will be able to select the action they want to perform 
-		Draft team, view team, play game
-	Drafting
-		Users will have a set salary cap, and each player will be ranked by points
-		Users will be able to search players, or choose from the given list
-		They cannot exceed the salary cap 
-	Viewing
-		Will show the user’s team in a traditional team-viewing manner
-		Forwards on top, then defensemen, then goalies
-	Play Games
-		Users will be able to play games against other users’ teams
-		Record tracked 
-Library/Framework - 
-	Tailwind CSS to create a visually pleasing UI.
-REST API - 
-	https://puckpedia.com/tools/data 
-User Story
-Our user can go on the application and build a hockey team with their favorite players. They will then get a score based on how well they made their team. Only admins will be able to create new teams, which will be assigned to a user, and the user populates that team build.
-Technical Design
-Backend - Node.js
-Frontend - React
-API Integration - NHL API platform
-Database - PostgreSQL
+* Name of Application
+	* HockeyBuilder 
+* Roles of Team Members
+	* Hannah - API Integration
+	* Jack - Backend/Database functionality
+	* Ryan - Frontend/UI
+* Functionality
+	* User Accounts - 
+		* Admin can view all teams and delete teams
+		* Users can create teams and play game
+	* Database - 
+		* Supabase, Postgres
+		* Our database will hold the teams that users create. 
+	* Interactive UI - 
+		* Drafting
+			* Users will be able to search players, or choose from the given list
+			* Can filter by position
+			* Chooses a center, left wind, right wing, and 2 defensemen
+		* Viewing
+			* Shows all of the teams in a table format
+			* Button to delete teams
+		* Play Games
+			* Users can select two teams to go head to head and winning team is displayed
+	* Extra Library/Framework - 
+		* Tailwind CSS to create a visually pleasing UI.
+	* REST API - 
+		* https://puckpedia.com/tools/data, fed the information into Supabase (approved by Professor Onimus)
+		* Player information
+* User Story
+	* Our user can go on the application and build a hockey team with their favorite players. They will then be able to select two teams to faceoff and see which team wins! Only admins will be able to view teams and delete them.
+* Technical Design
+	* Backend - Node.js
+	* Frontend - React, Express
+	* API Integration - Moneypuck
+	* Database - PostgreSQL, Supabase
 
 
 ### Requirements:
