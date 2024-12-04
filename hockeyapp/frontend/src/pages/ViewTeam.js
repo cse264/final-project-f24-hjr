@@ -49,6 +49,7 @@ function ViewTeam() {
 
       // Remove the deleted team from the list in the frontend
       setTeams((prevTeams) => prevTeams.filter((team) => team.teamId !== teamId));
+      alert("Team deleted successfully!");
     } catch (err) {
       console.error(err);
       setError("Failed to delete team. Please try again.");
