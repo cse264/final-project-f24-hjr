@@ -56,4 +56,108 @@ body {
   background-color: #002887; /* Matches Tailwind's dark background */
   color: white;
 }
+/* General Layout */
+.App {
+  font-family: 'Arial', sans-serif;
+  color: #333;
+  background-color: #f9f9f9;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header Styling */
+.App-header {
+  background-color: #0d47a1;
+  color: white;
+  padding: 20px;
+  text-align: center;
+  border-bottom: 5px solid #1565c0;
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+}
+
+.logo-container {
+  margin-bottom: 10px;
+}
+
+.logo {
+  max-width: 150px;
+  height: auto;
+}
+
+/* Navigation Bar */
+.navbar {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 10px;
+}
+
+.nav-links {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 20px;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: white;
+  font-size: 18px;
+  font-weight: bold;
+  transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+  color: #81d4fa;
+}
+
+.disabled {
+  pointer-events: none;
+  opacity: 0.5;
+  color: #ccc;
+}
+
+/* Logout Button */
+.logout-button {
+  background-color: #e53935;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 16px;
+  font-weight: bold;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.logout-button:hover {
+  background-color: #b71c1c;
+}
+
+/* Main Content Area */
+.content {
+  padding: 20px;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .nav-links {
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .nav-link {
+    font-size: 16px;
+  }
+}
+
 

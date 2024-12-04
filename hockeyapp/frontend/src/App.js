@@ -34,44 +34,48 @@ function App() {
     <div className="App">
       <Router>
         <header className="App-header">
-          <img src={logo} alt="HockeyBuilder Logo" className="logo" />
-          <nav>
+          <div className="logo-container">
+            <img src={logo} alt="HockeyBuilder Logo" className="logo" />
+          </div>
+          <nav className="navbar">
             <ul className="nav-links">
               <li>
-                <Link to="/">Home</Link>
+                <Link to="/" className="nav-link">Home</Link>
               </li>
               <li>
-                <Link to="/login">Login</Link>
+                <Link to="/login" className="nav-link">Login</Link>
               </li>
               <li>
-                <Link 
+                <Link
                   to={role === 'user' ? '/draft-team' : '#'}
                   onClick={handleDraftTeamClick}
+                  className={`nav-link ${role !== 'user' ? 'disabled' : ''}`}
                 >
                   Draft Team
                 </Link>
               </li>
               <li>
-                <Link 
+                <Link
                   to={role === 'admin' ? '/view-team' : '#'}
                   onClick={handleViewTeamClick}
+                  className={`nav-link ${role !== 'admin' ? 'disabled' : ''}`}
                 >
                   View Teams
                 </Link>
               </li>
               <li>
-                <Link to="/play-game">Play Game</Link>
+                <Link to="/play-game" className="nav-link">Play Game</Link>
               </li>
             </ul>
           </nav>
-          {role && ( // Show Logout button only if a role is set
+          {role && (
             <button onClick={handleLogout} className="logout-button">
               Logout
             </button>
           )}
         </header>
-
-        <main>
+  
+        <main className="content">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login setRole={setRole} />} />
@@ -83,6 +87,7 @@ function App() {
       </Router>
     </div>
   );
+  
 }
 
 export default App;
