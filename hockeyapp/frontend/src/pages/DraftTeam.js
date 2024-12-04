@@ -62,6 +62,11 @@ function DraftTeam() {
   const handleAddPlayer = (player) => {
     // DEFENSEMEN
     if (player.position === "D") {
+      if(team.D && team.D.name === player.name){
+        setError('Cannot choose the same defensemen twice.')
+        return;
+      }
+
       if (team.D && team.D2) {
         setError("Both defense positions are already filled.");
         return;
