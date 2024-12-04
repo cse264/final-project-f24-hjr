@@ -1,3 +1,8 @@
+/**
+ * Login page
+ * This file contains the functionality and look of the login UI
+ */
+
 import React, { useState } from "react";
 
 function Login({ setRole }) {
@@ -5,6 +10,7 @@ function Login({ setRole }) {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
 
+  // Sets up the event
   const handleLogin = (e) => {
     e.preventDefault();
 
@@ -25,6 +31,7 @@ function Login({ setRole }) {
     }
   };
 
+  // using Tailwind CSS
   return (
     <div className="flex items-center justify-center min-h-screen">
       <div className="bg-white p-8 rounded-lg shadow-lg border border-gray-300 max-w-md w-full">
