@@ -46,6 +46,9 @@
 * First open a terminal and cd into the backend. once in the backend, run 'node server.js' to run it on port 3000.
 * Next, open a seperate terminal and cd into the frontend. once in the frontend, run 'npm run start' to start the react app on port 3001. Then, you can interact with the app in the localhost. 
 * For loggin in, one admin login is 'jack' and '123'. a user login is 'ryan' and '456'. each are the username and password respectively. 
+* create a .env file in backend and paste this in
+	* SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Inp2a2Zyc3NocXV6cmFybGV5YWtvIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTczMjU2ODQ0NiwiZXhwIjoyMDQ4MTQ0NDQ2fQ.2cd2QZ9k-Qe-lRlCycR9H_OMKQWXwRKeQcdAvf536V8'
+
 
 ### Requirements:
 * Must have user accounts and different user roles (like user/Admin, free/paid, etc)
