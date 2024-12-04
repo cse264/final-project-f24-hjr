@@ -1,3 +1,8 @@
+/**
+ * Frontend file
+ * This file contains the functionality of user/admin abilities
+ */
+
 import React, { useState } from 'react'; 
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import './App.css';
@@ -9,8 +14,9 @@ import Login from './pages/Login.js';
 import logo from './NHL-Logo.png';
 
 function App() {
-  const [role, setRole] = useState(null); // Role: null, 'admin', or 'user'
+  const [role, setRole] = useState(null); 
 
+  // only allows user to draft team
   const handleDraftTeamClick = (e) => {
     if (role !== 'user') {
       e.preventDefault();
@@ -18,6 +24,7 @@ function App() {
     }
   };
 
+  // only allows user to play game
   const handlePlayGameClick = (e) => {
     if (role !== 'user') {
       e.preventDefault();
@@ -25,6 +32,7 @@ function App() {
     }
   };
 
+  // only allows admin to view team
   const handleViewTeamClick = (e) => {
     if (role !== 'admin') {
       e.preventDefault();
@@ -32,8 +40,9 @@ function App() {
     }
   };
 
+  // changes role for logout
   const handleLogout = () => {
-    setRole(null); // Reset the role to null
+    setRole(null); // reset the role to null
     alert('You have been logged out.');
   };
 
