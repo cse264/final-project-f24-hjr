@@ -41,7 +41,6 @@ app.get('/players/:position', async (req, res, next) => {
       throw error;
     }
 
-
     res.json(data);
   } catch (err) {
     console.error('Error fetching players by position:', err);
@@ -67,33 +66,22 @@ app.post('/teams', async (req, res, next) => {
       return res.status(400).send('Missing required fields: teamName, left, center, right, defense1, defense2');
     }
 
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from(myTeamsTable)
       .insert([{ teamName: teamName, left: left, center: center, right: right, defense1: defense1, defense2: defense2 }]);
 
-    // if (error) throw error;
-    // if (error) {
-    //   console.error('Supabase error:', error);
-    //   return res.status(500).json({ error: error.message });
-    // }
-    console.log('Supabase data:', data);
-    console.log('Supabase error:', error);
-
+    // Check for errors
     if (error) {
-      console.error('Supabase error:', error);
+      console.error('Supabase insert error:', error);
       return res.status(500).json({ error: error.message });
     }
 
-    // If data is null or empty, log and handle it
-    if (!data || data.length === 0) {
-      return res.status(400).json({ error: 'Failed to insert the team' });
-    }
-    // if (!data || data.length === 0) { 
-    //   return res.json({ success: true, message: "Team inserted successfully, but no data returned from Supabase" }); 
-    // }
+    // Return a success response
+    res.status(200).json({
+      success: true,
+      message: 'Team created successfully',
+    });
 
-
-    res.json(data[0]); // Returning the newly created team
   } catch (err) {
     console.error('Error creating team:', err);
     next(err);
@@ -116,13 +104,13 @@ app.get('/teams', async (req, res, next) => {
   }
 });
 
-
+// DELETE - /teams/:id
 app.delete('/teams/:id', async (req, res, next) => {
   const { id } = req.params;
   console.log('Attempting to delete team with ID:', id);
 
   try {
-    const { data, error } = await supabase
+    const { error } = await supabase
       .from(myTeamsTable) 
       .delete()
       .eq('teamId', id);  
@@ -132,18 +120,12 @@ app.delete('/teams/:id', async (req, res, next) => {
       return res.status(500).json({ message: 'Internal server error' });
     }
 
-    if (data.length === 0) {
-      return res.status(404).json({ message: 'Team not found' });
-    }
-
     return res.status(200).json({ message: 'Team deleted successfully' });
   } catch (err) {
     console.error('Error deleting team:', err);
     next(err);
   }
 });
-
-
 
 // Start server
 const PORT = process.env.PORT || 3000;
