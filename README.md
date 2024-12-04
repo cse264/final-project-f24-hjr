@@ -9,9 +9,9 @@
 * Name of Application
 	* HockeyBuilder 
 * Roles of Team Members
-	* Hannah - API Integration
-	* Jack - Backend/Database functionality
-	* Ryan - Frontend/UI
+	* Hannah Kaufman, hfk225@lehigh.edu  - API Integration
+	* Jack Mishkin, jsm225@lehigh.edu  - Backend/Database functionality
+	* Ryan Mock, rtm225@lehigh.edu - Frontend/UI
 * Functionality
 	* User Accounts - 
 		* Admin can view all teams and delete teams
