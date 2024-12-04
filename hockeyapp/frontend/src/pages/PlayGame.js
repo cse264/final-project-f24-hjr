@@ -1,14 +1,11 @@
-/**
- * PlayGame page
- * This file contains the functionality and the look of the playgame UI
- */
-
 import React, { useState, useEffect } from "react";
 
 function PlayGame() {
   const [teams, setTeams] = useState([]);
   const [team1, setTeam1] = useState(null);
   const [team2, setTeam2] = useState(null);
+  const [selectedTeam1, setSelectedTeam1] = useState(null); // Store selectedTeam1
+  const [selectedTeam2, setSelectedTeam2] = useState(null); // Store selectedTeam2
   const [players1, setPlayers1] = useState([]);
   const [players2, setPlayers2] = useState([]);
   const [winner, setWinner] = useState(null);
@@ -45,23 +42,28 @@ function PlayGame() {
     }
 
     setError("");
-    const selectedTeam1 = teams.find((team) => team.teamName === team1);
-    const selectedTeam2 = teams.find((team) => team.teamName === team2);
+    const selectedTeam1Data = teams.find((team) => team.teamName === team1);
+    const selectedTeam2Data = teams.find((team) => team.teamName === team2);
+
+    setSelectedTeam1(selectedTeam1Data);
+    setSelectedTeam2(selectedTeam2Data);
 
     setPlayers1([
-      selectedTeam1.left,
-      selectedTeam1.center,
-      selectedTeam1.right,
-      selectedTeam1.defense1,
-      selectedTeam1.defense2,
+      selectedTeam1Data.left,
+      selectedTeam1Data.center,
+      selectedTeam1Data.right,
+      selectedTeam1Data.defense1,
+      selectedTeam1Data.defense2,
+      selectedTeam1Data.teamAVGPoints,
     ]);
 
     setPlayers2([
-      selectedTeam2.left,
-      selectedTeam2.center,
-      selectedTeam2.right,
-      selectedTeam2.defense1,
-      selectedTeam2.defense2,
+      selectedTeam2Data.left,
+      selectedTeam2Data.center,
+      selectedTeam2Data.right,
+      selectedTeam2Data.defense1,
+      selectedTeam2Data.defense2,
+      selectedTeam2Data.teamAVGPoints,
     ]);
 
     setGameSet(true);
@@ -69,13 +71,42 @@ function PlayGame() {
   };
 
   const handlePlayGame = () => {
-    const randomWinner = Math.random() < 0.5 ? team1 : team2;
-    setWinner(randomWinner);
+    if (!selectedTeam1 || !selectedTeam2) {
+      setError("Game is not set properly. Please set the game first.");
+      return;
+    }
+
+    const team1BaseOdds = 0.5;
+    const team2BaseOdds = 0.5;
+
+    const difference =
+      selectedTeam1.teamAVGPoints - selectedTeam2.teamAVGPoints;
+    const team1Odds =
+      difference > 20
+        ? 0.7
+        : difference > 10
+        ? 0.6
+        : difference < -20
+        ? 0.3
+        : difference < -10
+        ? 0.4
+        : team1BaseOdds;
+
+    const team2Odds = 1 - team1Odds;
+
+    // Random number to decide the winner
+    const randomValue = Math.random();
+    const grabWinner = randomValue < team1Odds ? selectedTeam1 : selectedTeam2;
+
+    // Set the winner
+    setWinner(grabWinner);
   };
 
   const handleReset = () => {
     setTeam1(null);
     setTeam2(null);
+    setSelectedTeam1(null);
+    setSelectedTeam2(null);
     setPlayers1([]);
     setPlayers2([]);
     setGameSet(false);
@@ -83,14 +114,12 @@ function PlayGame() {
     setError("");
   };
 
-  // using Tailwind CSS
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50">
       <div className="w-full max-w-4xl p-6 bg-white shadow-lg rounded-lg">
         <h1 className="text-3xl font-bold mb-4 text-center">Play Game</h1>
         {error && <p className="text-red-600 mb-4 text-center">{error}</p>}
 
-        {/* Team Selection Section */}
         {!gameSet && (
           <>
             <div className="mb-4">
@@ -140,7 +169,6 @@ function PlayGame() {
           </>
         )}
 
-        {/* Game Display Section */}
         {gameSet && (
           <>
             <div className="mt-6 grid grid-cols-2 gap-6">
@@ -182,11 +210,10 @@ function PlayGame() {
           </>
         )}
 
-        {/* Winner Display Section */}
         {winner && (
           <div className="mt-6 text-center">
             <h2 className="text-2xl font-bold text-green-600">
-              🎉 Congratulations {winner}! 🎉
+              🎉 Congratulations {winner.teamName}! 🎉
             </h2>
           </div>
         )}

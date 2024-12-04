@@ -116,9 +116,18 @@ function DraftTeam() {
       setError("The team must have all positions filled before saving.");
       return;
     }
-
+    
     try {
+      const avg = Math.round(
+        (Number(team.L.I_F_points) +
+          Number(team.C.I_F_points) +
+          Number(team.R.I_F_points) +
+          Number(team.D.I_F_points) +
+          Number(team.D2.I_F_points)) / 5
+      );
+      
       const payload = {
+        teamAVGPoints: avg,
         title: teamTitle,
         L: team.L.name,
         C: team.C.name,
@@ -126,7 +135,7 @@ function DraftTeam() {
         D: team.D.name,
         D2: team.D2.name,
       };
-
+      
       const response = await fetch("/teams", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -140,7 +149,7 @@ function DraftTeam() {
       }
 
       alert("Team saved successfully!");
-      setTeam({ L: null, C: null, R: null, D: null, D2: null });
+      setTeam({ L: null, C: null, R: null, D: null, D2: null , teamAVGPoints: null});
       setTeamTitle("");
     } catch (err) {
       console.error(err);
@@ -150,12 +159,16 @@ function DraftTeam() {
 
   
   const renderTeam = () => {
-    return Object.entries(team).map(([position, player]) => (
-      <div key={position} className="mb-2">
-        <strong className="text-lg">{position}:</strong> {player ? player.name : "Empty"}
-      </div>
-    ));
+    return Object.entries(team)
+      .filter(([key]) => key !== "teamAVGPoints") //exclude teamAVGPoints
+      .map(([position, player]) => (
+        <div key={position} className="mb-2">
+          <strong className="text-lg">{position}:</strong>{" "}
+          {player ? player.name : "Empty"}
+        </div>
+      ));
   };
+  
 
   // using Tailwind CSS
   return (

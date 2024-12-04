@@ -70,7 +70,8 @@ app.get('/players/:position', async (req, res, next) => {
 app.post('/teams', async (req, res, next) => {
   try {
     console.log(req.body)
-
+    
+    const teamAVGPoints = req.body.teamAVGPoints
     const teamName = req.body.title
     const left = req.body.L 
     const center = req.body.C 
@@ -86,7 +87,7 @@ app.post('/teams', async (req, res, next) => {
 
     const { error } = await supabase
       .from(myTeamsTable)
-      .insert([{ teamName: teamName, left: left, center: center, right: right, defense1: defense1, defense2: defense2 }]);
+      .insert([{ teamName: teamName, left: left, center: center, right: right, defense1: defense1, defense2: defense2, teamAVGPoints: teamAVGPoints}]);
 
     if (error) {
       console.error('Supabase insert error:', error);
