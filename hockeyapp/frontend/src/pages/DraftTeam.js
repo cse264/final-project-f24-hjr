@@ -49,23 +49,20 @@ function DraftTeam() {
     try {
       let endpoint = "/players";
 
-      // if there is a position specified, add the position to the endpoint
+      // Filter players by position if a position is selected
       if (position) {
         endpoint += `/${position}`;
       }
 
       const response = await fetch(endpoint);
-      if (!response.ok) {
-        throw new Error("Failed to fetch players");
-      }
+      if (!response.ok) throw new Error("Failed to fetch players");
 
       const data = await response.json();
 
-      // Filter the player list to only include players that include the search term
+      // Apply search term filtering (if any)
       const filteredPlayers = data.filter((player) =>
         player.name.toLowerCase().includes(searchTerm.toLowerCase())
       );
-
       setPlayers(filteredPlayers);
     } catch (err) {
       console.error(err);
@@ -77,45 +74,37 @@ function DraftTeam() {
    * Guarantees that the team is filled properly
    */
   const handleAddPlayer = (player) => {
-    // DEFENSEMEN
     if (player.position === "D") {
-      // throw error if user tries to use the same defensemen twice
       if(team.D && team.D.name === player.name){
         setError('Cannot choose the same defensemen twice.')
         return;
       }
-      
-      // throw error if user tries to choose another defensemen
+
       if (team.D && team.D2) {
         setError("Both defense positions are already filled.");
         return;
       }
-      
-      // updates team to add the selected player
+
       const updatedTeam = { ...team };
-      if (!team.D) {
-        updatedTeam.D = player;
-      } else {
-        updatedTeam.D2 = player;
-      }
+      if (!team.D) updatedTeam.D = player;
+      else updatedTeam.D2 = player;
 
       setTeam(updatedTeam);
-      setError(""); 
+      setError(""); // Clear any previous error
       return;
     }
 
     // FORWARDS
-    // throw error if the user selects a player for a position that is already filled
     if (team[player.position]) {
       setError(`The ${player.position} position is already filled.`);
       return;
     }
 
-    // updates team to add the selected forward
+    // Add FORWARDS
     const updatedTeam = { ...team };
     updatedTeam[player.position] = player;
     setTeam(updatedTeam);
-    setError(""); 
+    setError(""); // Clear any previous error
   };
 
   /**
@@ -151,13 +140,7 @@ function DraftTeam() {
       }
 
       alert("Team saved successfully!");
-      setTeam({
-        L: null,
-        C: null,
-        R: null,
-        D: null,
-        D2: null,
-      });
+      setTeam({ L: null, C: null, R: null, D: null, D2: null });
       setTeamTitle("");
     } catch (err) {
       console.error(err);
@@ -168,29 +151,49 @@ function DraftTeam() {
   
   const renderTeam = () => {
     return Object.entries(team).map(([position, player]) => (
-      <div key={position} className="team-position">
-        <strong>{position}:</strong> {player ? player.name : "Empty"}
+      <div key={position} className="mb-2">
+        <strong className="text-lg">{position}:</strong> {player ? player.name : "Empty"}
       </div>
     ));
   };
 
   return (
-    <div className="draft-team-container" style={{ display: "flex", gap: "2rem" }}>
+    <div className="p-6 bg-gray-100 min-h-screen">
+      {/* Team Section */}
+      <div className="bg-white p-6 shadow-md rounded-lg mb-6">
+        <h2 className="text-2xl font-bold mb-4 text-center">Your Team</h2>
+        <input
+          type="text"
+          placeholder="Team Name"
+          value={teamTitle}
+          onChange={(e) => setTeamTitle(e.target.value)}
+          className="p-2 border border-gray-300 rounded-lg mb-4 w-full"
+        />
+        {renderTeam()}
+        <button
+          onClick={saveTeam}
+          className="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 mt-4 w-full"
+        >
+          Save Team
+        </button>
+        {error && <p className="text-red-600 mt-4 text-center">{error}</p>}
+      </div>
+
       {/* Search Section */}
-      <div className="search-section" style={{ flex: 1 }}>
-        <h2>Search Players</h2>
-        <div style={{ marginBottom: "1rem" }}>
+      <div className="bg-white p-6 shadow-md rounded-lg">
+        <h2 className="text-2xl font-bold mb-4">Search Players</h2>
+        <div className="flex gap-4 mb-6">
           <input
             type="text"
             placeholder="Search by name"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            style={{ marginRight: "1rem", padding: "0.5rem" }}
+            className="p-2 border border-gray-300 rounded-lg w-2/3"
           />
           <select
             value={position}
             onChange={(e) => setPosition(e.target.value)}
-            style={{ marginRight: "1rem", padding: "0.5rem" }}
+            className="p-2 border border-gray-300 rounded-lg w-1/3"
           >
             <option value="">All Positions</option>
             <option value="L">Left Wing</option>
@@ -198,22 +201,24 @@ function DraftTeam() {
             <option value="R">Right Wing</option>
             <option value="D">Defense</option>
           </select>
-          <button onClick={searchPlayers} style={{ padding: "0.5rem 1rem" }}>
+          <button
+            onClick={searchPlayers}
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+          >
             Search
           </button>
         </div>
-
         <ul>
           {players.length > 0 ? (
             players.map((player) => (
-              <li key={player.id} style={{ marginBottom: "1rem" }}>
-                <div style={{ display: "flex", justifyContent: "space-between" }}>
-                  <span>
+              <li key={player.id} className="mb-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-lg">
                     {player.name} ({player.position})
                   </span>
                   <button
                     onClick={() => handleAddPlayer(player)}
-                    style={{ padding: "0.5rem" }}
+                    className="px-4 py-2 bg-gradient-to-r from-green-400 via-green-500 to-green-600 text-white rounded-lg hover:from-green-500 hover:to-green-700"
                   >
                     Add to Team
                   </button>
@@ -224,25 +229,7 @@ function DraftTeam() {
             <li>No players found</li>
           )}
         </ul>
-        {error && <p style={{ color: "red" }}>{error}</p>}
-      </div>
-
-      {/* Team Section */}
-      <div className="team-section" style={{ flex: 1 }}>
-        <h2>Your Team</h2>
-        <input
-          type="text"
-          placeholder="Team Name"
-          value={teamTitle}
-          onChange={(e) => setTeamTitle(e.target.value)}
-          style={{ marginBottom: "1rem", padding: "0.5rem", display: "block" }}
-        />
-        {renderTeam()}
-        <button onClick={saveTeam} style={{ padding: "0.5rem 1rem", marginTop: "1rem" }}>
-          Save Team
-        </button>
-        {/* Error Section */}
-        {error && <p style={{ color: "red", marginTop: "1rem" }}>{error}</p>}
+        {error && <p className="text-red-600">{error}</p>}
       </div>
     </div>
   );

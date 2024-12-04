@@ -11,18 +11,25 @@ import logo from './NHL-Logo.png';
 function App() {
   const [role, setRole] = useState(null); // Role: null, 'admin', or 'user'
 
-  const handleDraftTeamClick = () => {
-    if (role === 'user') {
-      return; // Allow user access
+  const handleDraftTeamClick = (e) => {
+    if (role !== 'user') {
+      e.preventDefault();
+      alert('Access denied. Only users can draft teams.');
     }
-    alert('Access denied. Only users can draft teams.'); // Prevent admin access
   };
 
-  const handleViewTeamClick = () => {
-    if (role === 'admin') {
-      return; // Allow admin access
+  const handlePlayGameClick = (e) => {
+    if (role !== 'user') {
+      e.preventDefault();
+      alert('Access denied. Only users can play games.');
     }
-    alert('Access denied. Only admins can view teams.'); // Prevent user access
+  };
+
+  const handleViewTeamClick = (e) => {
+    if (role !== 'admin') {
+      e.preventDefault();
+      alert('Access denied. Only admins can view teams.');
+    }
   };
 
   const handleLogout = () => {
@@ -64,7 +71,13 @@ function App() {
                 </Link>
               </li>
               <li>
-                <Link to="/play-game" className="nav-link">Play Game</Link>
+                <Link
+                  to={role === 'user' ? '/play-game' : '#'}
+                  onClick={handlePlayGameClick}
+                  className={`nav-link ${role !== 'user' ? 'disabled' : ''}`}
+                >
+                  Play Game
+                </Link>
               </li>
             </ul>
           </nav>
@@ -87,7 +100,6 @@ function App() {
       </Router>
     </div>
   );
-  
 }
 
 export default App;
